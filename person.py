@@ -28,13 +28,26 @@ class Person:
                     infobox_data = find_infobox_data_of_row(row)
                     plainlist = find_plainlist_of_infobox_data(infobox_data)
                     if plainlist is not None:
-                        divs = plainlist.find_all('div', {"class": 'marriage-display-ws'})
-                        for div in divs:
-                            for a in div.find_all('a'):
-                                print('new spouse ' + a['href'])
-                                spouse_list.append(a['href'])
+                        for a in plainlist.find_all('a'):
+                            print('new spouse ' + a['href'])
+                            spouse_list.append(a['href'])
+                    else:
+                        for a in infobox_data.find_all('a'):
+                            print('new spouse ' + a['href'])
+                            spouse_list.append(a['href'])
+                if label_value.lower() == 'father':
+                    infobox_data = find_infobox_data_of_row(row)
+                    a = infobox_data.find('a')
+                    print('new father ' + a['href'])
+                    self.father = a['href']
+                if label_value.lower() == 'mother':
+                    infobox_data = find_infobox_data_of_row(row)
+                    a = infobox_data.find('a')
+                    print('new mother ' + a['href'])
+                    self.father = a['href']
 
         self.issue_list = issue_list
+        self.spouse_list = spouse_list
 
 
 def find_infobox_rows(url):
