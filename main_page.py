@@ -1,6 +1,8 @@
 import tkinter as tk
 
+from node import Node
 from person import Person
+from relationship import Relationship
 
 
 class MainPage:
@@ -22,8 +24,47 @@ class MainPage:
         self.root.mainloop()
 
     def evaluate(self):
-        person1_name = self.entry_person1.get()
-        person1 = Person('/wiki/' + person1_name)
-        person2_name = self.entry_person2.get()
-        person2 = Person('/wiki/' + person2_name)
+        path = MainPage.find_path('/wiki/' + self.entry_person1.get(), '/wiki/' + self.entry_person2.get())
 
+        for node in path:
+            print(node.link)
+            print(node.relationship)
+
+    @staticmethod
+    def find_path(link1, link2):
+        visited = set()
+        queue = [[Node(link1, Relationship.SELF)]]
+
+        while queue:
+            path = queue.pop(0)
+            node = path[-1]
+
+            if node.link == link2:
+                return path
+
+            visited.add(node.link)
+            person = Person(node.link)
+
+            if person.father is not None and person.father not in visited:
+                new_path_father = list(path)
+                new_path_father.append(Node(person.father, Relationship.FATHER))
+                queue.append(new_path_father)
+
+            if person.mother is not None and person.mother not in visited:
+                new_path_mother = list(path)
+                new_path_mother.append(Node(person.mother, Relationship.MOTHER))
+                queue.append(new_path_mother)
+
+            if person.issue_list is not None:
+                for issue in person.issue_list:
+                    if issue not in visited:
+                        new_path_issue = list(path)
+                        new_path_issue.append(Node(issue, Relationship.CHILD))
+                        queue.append(new_path_issue)
+
+            if person.spouse_list is not None:
+                for spouse in person.spouse_list:
+                    if spouse not in visited:
+                        new_path_spouse = list(path)
+                        new_path_spouse.append(Node(spouse, Relationship.SPOUSE))
+                        queue.append(new_path_spouse)
