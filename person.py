@@ -1,3 +1,5 @@
+from urllib.error import HTTPError
+
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 
@@ -18,7 +20,14 @@ class Person:
         self.populate_family_members()
 
     def populate_family_members(self):
-        html = urlopen(self.link)
+        html = None
+
+        try:
+            html = urlopen(self.link)
+        except HTTPError as e:
+            print("Error occurred when trying to open page " + self.link + " Error code: " + str(e.code))
+            return
+
         soup = BeautifulSoup(html, 'html.parser')
 
         self.title = Person.find_title(soup)
@@ -39,13 +48,11 @@ class Person:
                     infobox_data = Person.find_infobox_data_of_row(row)
                     a = infobox_data.find('a')
                     if a is not None and a['href'] is not None:
-                        print('new father ' + a['href'])
                         self.father = a['href']
                 if label_value.lower() == 'mother':
                     infobox_data = Person.find_infobox_data_of_row(row)
                     a = infobox_data.find('a')
                     if a is not None and a['href'] is not None:
-                        print('new mother ' + a['href'])
                         self.mother = a['href']
 
     @staticmethod
@@ -91,5 +98,4 @@ class Person:
         else:
             for a in infobox_data.find_all('a'):
                 if a is not None and a['href'] is not None:
-                    print('new issue ' + a['href'])
                     list_to_append_to.append(a['href'])
