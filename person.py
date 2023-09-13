@@ -39,9 +39,7 @@ class Person:
         html = urlopen(url)
         soup = BeautifulSoup(html, 'html.parser')
 
-        bodies = soup.find_all('body')
-        body = bodies[0]
-        container = body.find('div', {"class": 'mw-page-container'})
+        container = soup.find_all('body')[0].find('div', {"class": 'mw-page-container'})
         inner_container = container.find('div', {"class": 'mw-page-container-inner'})
         content_container = inner_container.find('div', {"class": 'mw-content-container'})
         main_content = content_container.find('main', {"id": 'content'})
