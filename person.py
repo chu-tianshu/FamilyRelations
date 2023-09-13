@@ -21,14 +21,12 @@ class Person:
                 if label_value.lower() == 'father':
                     infobox_data = Person.find_infobox_data_of_row(row)
                     a = infobox_data.find('a')
-
                     if a is not None and a['href'] is not None:
                         print('new father ' + a['href'])
                         self.father = a['href']
                 if label_value.lower() == 'mother':
                     infobox_data = Person.find_infobox_data_of_row(row)
                     a = infobox_data.find('a')
-
                     if a is not None and a['href'] is not None:
                         print('new mother ' + a['href'])
                         self.mother = a['href']
