@@ -1,5 +1,4 @@
 import tkinter as tk
-import urllib.request
 
 from node import Node
 from person import Person
