@@ -5,19 +5,27 @@ from urllib.request import urlopen
 class Person:
     def __init__(self, name):
         self.link = 'https://en.wikipedia.org/' + name
+        self.issue_list = []
+        self.spouse_list = []
+        self.father = None
+        self.mother = None
 
+        self.populate_family_members()
+
+    def populate_family_members(self):
         rows = self.find_infobox_rows(self.link)
-        issue_list = []
-        spouse_list = []
+
+        if rows is None:
+            return
 
         for row in rows:
             label = row.find('th', {"class": 'infobox-label'})
             if label is not None:
                 label_value = label.text
                 if label_value.startswith('Issue'):
-                    Person.append_all_links(issue_list, row)
+                    Person.append_all_links(self.issue_list, row)
                 if label_value.startswith('Spouse'):
-                    Person.append_all_links(spouse_list, row)
+                    Person.append_all_links(self.spouse_list, row)
                 if label_value.lower() == 'father':
                     infobox_data = Person.find_infobox_data_of_row(row)
                     a = infobox_data.find('a')
@@ -31,12 +39,10 @@ class Person:
                         print('new mother ' + a['href'])
                         self.mother = a['href']
 
-        self.issue_list = issue_list
-        self.spouse_list = spouse_list
-
     @staticmethod
     def find_infobox_rows(url):
         html = urlopen(url)
+        redirect_url = html.geturl()
         soup = BeautifulSoup(html, 'html.parser')
 
         container = soup.find_all('body')[0].find('div', {"class": 'mw-page-container'})
@@ -47,6 +53,10 @@ class Person:
         content_text = body_content.find('div', {"id": 'mw-content-text'})
         parser_output = content_text.find('div', {"class": 'mw-parser-output'})
         infobox_vcard = parser_output.find('table', {"class": 'infobox vcard'})
+
+        if infobox_vcard is None:
+            return
+
         tbody = infobox_vcard.find('tbody')
         rows = tbody.find_all('tr')
 

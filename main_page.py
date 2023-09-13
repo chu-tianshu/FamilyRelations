@@ -49,11 +49,13 @@ class MainPage:
                 new_path_father = list(path)
                 new_path_father.append(Node(person.father, Relationship.FATHER))
                 queue.append(new_path_father)
+                visited.add(person.father)
 
             if person.mother is not None and person.mother not in visited:
                 new_path_mother = list(path)
                 new_path_mother.append(Node(person.mother, Relationship.MOTHER))
                 queue.append(new_path_mother)
+                visited.add(person.mother)
 
             if person.issue_list is not None:
                 for issue in person.issue_list:
@@ -61,6 +63,7 @@ class MainPage:
                         new_path_issue = list(path)
                         new_path_issue.append(Node(issue, Relationship.CHILD))
                         queue.append(new_path_issue)
+                        visited.add(issue)
 
             if person.spouse_list is not None:
                 for spouse in person.spouse_list:
@@ -68,3 +71,4 @@ class MainPage:
                         new_path_spouse = list(path)
                         new_path_spouse.append(Node(spouse, Relationship.SPOUSE))
                         queue.append(new_path_spouse)
+                        visited.add(spouse)
