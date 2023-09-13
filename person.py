@@ -4,7 +4,12 @@ from urllib.request import urlopen
 
 class Person:
     def __init__(self, name):
+        # Title seems to be the reliable ID of a page because sometimes different urls point to the same page without
+        # redirection. An example: https://en.wikipedia.org/wiki/Henry_VIII_of_England and
+        # https://en.wikipedia.org/wiki/Henry_VIII
+
         self.link = 'https://en.wikipedia.org/' + name
+        self.title = None
         self.issue_list = []
         self.spouse_list = []
         self.father = None
@@ -13,7 +18,11 @@ class Person:
         self.populate_family_members()
 
     def populate_family_members(self):
-        rows = self.find_infobox_rows(self.link)
+        html = urlopen(self.link)
+        soup = BeautifulSoup(html, 'html.parser')
+
+        self.title = Person.find_title(soup)
+        rows = Person.find_infobox_rows(soup)
 
         if rows is None:
             return
@@ -40,11 +49,14 @@ class Person:
                         self.mother = a['href']
 
     @staticmethod
-    def find_infobox_rows(url):
-        html = urlopen(url)
-        redirect_url = html.geturl()
-        soup = BeautifulSoup(html, 'html.parser')
+    def find_title(soup):
+        head = soup.find('head')
+        title = head.find('title').text
 
+        return title
+
+    @staticmethod
+    def find_infobox_rows(soup):
         container = soup.find_all('body')[0].find('div', {"class": 'mw-page-container'})
         inner_container = container.find('div', {"class": 'mw-page-container-inner'})
         content_container = inner_container.find('div', {"class": 'mw-content-container'})
