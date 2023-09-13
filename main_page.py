@@ -25,9 +25,6 @@ class MainPage:
         self.root.mainloop()
 
     def evaluate(self):
-        response = urllib.request.urlopen('https://en.wikipedia.org/wiki/Henry_VIII_of_England')
-        u = response.geturl()
-
         path = MainPage.find_path('/wiki/' + self.entry_person1.get(), '/wiki/' + self.entry_person2.get())
 
         for node in path:
